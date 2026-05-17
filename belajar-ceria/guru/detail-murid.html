@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Detail Murid | Belajar Ceria</title>
+  <link rel="stylesheet" href="../css/style-umum.css">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    .detail-container {
+      background: white;
+      border-radius: 50px;
+      padding: 1.5rem;
+    }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #fff3e0, #ffe0b5);
+      border-radius: 30px;
+      padding: 15px;
+      text-align: center;
+      min-width: 120px;
+      flex: 1;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ff8c42;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: #8B5E3C;
+    }
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #c25d00;
+      margin: 20px 0 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #ffcd94;
+    }
+    .letter-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .letter-box {
+      width: 60px;
+      height: 60px;
+      background: #f0f8ff;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border: 2px solid #ffcd94;
+    }
+    .letter-box.earned {
+      background: #c8e6c9;
+      border-color: #4caf50;
+    }
+    .letter-box .upper {
+      font-size: 1.3rem;
+    }
+    .letter-box .lower {
+      font-size: 1rem;
+      color: #666;
+    }
+    .badge-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 15px 0;
+    }
+    .badge-card {
+      background: #f0f8ff;
+      border-radius: 25px;
+      padding: 10px;
+      text-align: center;
+      width: 110px;
+    }
+    .badge-card.earned {
+      background: #ffb347;
+      color: white;
+    }
+    .badge-card .icon {
+      font-size: 2rem;
+    }
+    .badge-card .name {
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+    .back-btn {
+      background: #ff8c42;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+    .number-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .number-box {
+      width: 55px;
+      height: 55px;
+      background: #f0f8ff;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: 2px solid #ffcd94;
+    }
+    .number-box.earned {
+      background: #c8e6c9;
+      border-color: #4caf50;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="logo"><h2>👩‍🏫 Detail Murid</h2></div>
+    <div class="user-info">
+      <span>👨‍🏫 Admin</span>
+      <button class="logout-btn" onclick="logoutGuru()">🚪 Keluar</button>
+    </div>
+  </div>
+  <div class="main-content" id="mainContent"></div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/guru.js"></script>
+<script>
+    let currentUser = null;
+    
+    function logoutGuru() {
+      sessionStorage.removeItem("bc_teacher_logged");
+      window.location.href = "login.html";
+    }
+    
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+    
+    function renderDetail() {
+      let studentName = getQueryParam("nama");
+      if (!studentName) {
+        window.location.href = "dashboard.html";
+        return;
+      }
+      
+      let progress = getStudentProgress(studentName);
+      let writtenLetters = progress.writtenLetters || [];
+      let writeCount = progress.writeCount || 0;
+      let readCount = progress.readCount || 0;
+      let mathCount = progress.mathCount || 0;
+      let earnedIds = progress.achievements || [];
+      
+      // Data huruf A-Z (besar dan kecil)
+      let allLetters = alphabetData.map(a => ({ upper: a.upper, lower: a.lower }));
+      let writtenSet = new Set(writtenLetters);
+      
+      // Data angka 0-9
+      const allNumbers = ["0","1","2","3","4","5","6","7","8","9"];
+      let writtenNumbers = [];
+      for (let num of allNumbers) {
+        if (writtenSet.has(num)) writtenNumbers.push(num);
+      }
+      
+      let totalLencana = achievements.length;
+      
+      // Statistik card
+      let html = `
+        <div class="detail-container">
+          <button class="back-btn" onclick="window.location.href='dashboard.html'">← Kembali ke Dashboard</button>
+          
+          <h2 style="text-align:center; color:#c25d00;">📘 Detail Progress: ${studentName}</h2>
+          
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-number">${writeCount}</div>
+              <div class="stat-label">✍️ Total Menulis</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${readCount}</div>
+              <div class="stat-label">📖 Total Membaca</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${mathCount}</div>
+              <div class="stat-label">🔢 Total Berhitung</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${earnedIds.length} / ${totalLencana}</div>
+              <div class="stat-label">🏆 Lencana</div>
+            </div>
+          </div>
+          
+          <div class="section-title">🔤 Huruf yang Sudah Ditulis (${writtenLetters.length} / 26)</div>
+          <div class="letter-grid">
+      `;
+      
+      for (let letter of allLetters) {
+        let isWritten = writtenSet.has(letter.upper) || writtenSet.has(letter.lower);
+        html += `
+          <div class="letter-box ${isWritten ? 'earned' : ''}">
+            <div class="upper">${letter.upper}</div>
+            <div class="lower">${letter.lower}</div>
+          </div>
+        `;
+      }
+      
+      html += `
+          </div>
+          
+          <div class="section-title">🔢 Angka yang Sudah Ditulis (${writtenNumbers.length} / 10)</div>
+          <div class="number-grid">
+      `;
+      
+      for (let num of allNumbers) {
+        let isWritten = writtenSet.has(num);
+        html += `
+          <div class="number-box ${isWritten ? 'earned' : ''}">
+            ${num}
+          </div>
+        `;
+      }
+      
+      html += `
+          </div>
+          
+          <div class="section-title">🏆 Lencana yang Didapat (${earnedIds.length} dari ${totalLencana})</div>
+          <div class="badge-grid">
+      `;
+      
+      for (let ach of achievements) {
+        let earned = earnedIds.includes(ach.id);
+        html += `
+          <div class="badge-card ${earned ? 'earned' : ''}">
+            <div class="icon">${ach.icon}</div>
+            <div class="name">${ach.name}</div>
+            <div style="font-size:0.6rem;">${earned ? '✅ Didapat' : '🔒 Belum'}</div>
+          </div>
+        `;
+      }
+      
+      html += `
+          </div>
+        </div>
+      `;
+      
+      document.getElementById("mainContent").innerHTML = html;
+    }
+    
+    // Cek auth
+    if (sessionStorage.getItem("bc_teacher_logged") !== "true") {
+      window.location.href = "login.html";
+    }
+    
+    renderDetail();
+</script>
+</body>
+</html>

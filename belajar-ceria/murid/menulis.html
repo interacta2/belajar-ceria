@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Menulis | Belajar Ceria</title>
+  <link rel="stylesheet" href="../css/style-umum.css">
+  <link rel="stylesheet" href="../css/style-murid.css">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    .mode-selector {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .mode-btn {
+      background: #ffefcf;
+      border: 2px solid #ffb347;
+      border-radius: 40px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #c25d00;
+      transition: 0.2s;
+    }
+    .mode-btn.active {
+      background: #ffb347;
+      color: white;
+    }
+    .type-selector {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+    .type-btn {
+      background: #ffefcf;
+      border: 2px solid #ffb347;
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #c25d00;
+    }
+    .type-btn.active {
+      background: #ffb347;
+      color: white;
+    }
+    .char-selector, .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin: 15px 0;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .char-btn {
+      background: #ffefcf;
+      border: 2px solid #ffb347;
+      border-radius: 35px;
+      padding: 6px 14px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #c25d00;
+      min-width: 45px;
+    }
+    .char-btn.active {
+      background: #ffb347;
+      color: white;
+    }
+    .word-btn {
+      background: #e8f5e9;
+      border: 2px solid #a5d6a7;
+      border-radius: 35px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #2e7d32;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .word-btn.active {
+      background: #4caf50;
+      color: white;
+      border-color: #2e7d32;
+    }
+    .word-display {
+      text-align: center;
+      font-size: 1.3rem;
+      background: #fff3e0;
+      padding: 12px;
+      border-radius: 35px;
+      margin: 15px 0;
+      color: #c25d00;
+      font-weight: bold;
+    }
+    .hint-text {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #ff8c42;
+      margin-top: 5px;
+    }
+    
+    /* Canvas Responsif - Tidak kegedean di laptop, pas di HP */
+    .canvas-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 15px 0;
+    }
+    canvas {
+      background: #fffef7;
+      border-radius: 30px;
+      box-shadow: inset 0 0 0 3px #ffe0aa, 0 5px 15px rgba(0,0,0,0.1);
+      cursor: crosshair;
+      touch-action: none;
+      width: 100%;
+      max-width: 500px;
+      height: auto;
+      aspect-ratio: 1/1;
+    }
+    
+    /* Responsive untuk tablet dan HP */
+    @media (max-width: 768px) {
+      canvas {
+        max-width: 400px;
+      }
+    }
+    @media (max-width: 480px) {
+      canvas {
+        max-width: 320px;
+      }
+      .mode-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+      .char-btn, .word-btn {
+        padding: 4px 10px;
+        font-size: 0.8rem;
+      }
+    }
+    
+    .guide-image {
+      text-align: center;
+      font-size: 2.5rem;
+      background: #f0f8ff;
+      border-radius: 35px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+    .btn {
+      background: linear-gradient(135deg, #ffb347, #ff8c42);
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+    }
+    .btn-danger {
+      background: #ff8888;
+    }
+    .btn-back {
+      background: #ff8c42;
+      margin-bottom: 15px;
+      display: inline-block;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="logo"><h2>✍️ Belajar Ceria</h2></div>
+    <div class="user-info">
+      <span id="userName"></span>
+      <button class="logout-btn" onclick="logoutMurid()">🚪 Keluar</button>
+    </div>
+  </div>
+  <div class="main-content" id="mainContent"></div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/murid.js"></script>
+<script>
+    let currentUser = getCurrentUser();
+    if (!currentUser) window.location.href = "dashboard.html";
+    document.getElementById("userName").innerHTML = `🧒 ${currentUser}`;
+    
+    // ========== DATA ANGKA 0-9 ==========
+    const numberData = [
+      { char: "0", display: "0", image: "0️⃣", name: "Nol" },
+      { char: "1", display: "1", image: "1️⃣", name: "Satu" },
+      { char: "2", display: "2", image: "2️⃣", name: "Dua" },
+      { char: "3", display: "3", image: "3️⃣", name: "Tiga" },
+      { char: "4", display: "4", image: "4️⃣", name: "Empat" },
+      { char: "5", display: "5", image: "5️⃣", name: "Lima" },
+      { char: "6", display: "6", image: "6️⃣", name: "Enam" },
+      { char: "7", display: "7", image: "7️⃣", name: "Tujuh" },
+      { char: "8", display: "8", image: "8️⃣", name: "Delapan" },
+      { char: "9", display: "9", image: "9️⃣", name: "Sembilan" }
+    ];
+    
+    // ========== DATA KATA BENDA ==========
+    const kataData = [
+      { id: 1, word: "apel", image: "🍎", desc: "buah apel" },
+      { id: 2, word: "pisang", image: "🍌", desc: "buah pisang" },
+      { id: 3, word: "jeruk", image: "🍊", desc: "buah jeruk" },
+      { id: 4, word: "mangga", image: "🥭", desc: "buah mangga" },
+      { id: 5, word: "kucing", image: "🐱", desc: "hewan kucing" },
+      { id: 6, word: "anjing", image: "🐶", desc: "hewan anjing" },
+      { id: 7, word: "ayam", image: "🐔", desc: "hewan ayam" },
+      { id: 8, word: "ikan", image: "🐟", desc: "hewan ikan" },
+      { id: 9, word: "mobil", image: "🚗", desc: "kendaraan mobil" },
+      { id: 10, word: "sepeda", image: "🚲", desc: "kendaraan sepeda" },
+      { id: 11, word: "bunga", image: "🌸", desc: "bunga" },
+      { id: 12, word: "rumah", image: "🏠", desc: "rumah" },
+      { id: 13, word: "buku", image: "📚", desc: "buku" }
+    ];
+    
+    // State
+    let currentMode = "huruf";      // "huruf", "angka", "kata", "kosong"
+    let currentChar = alphabetData[0];
+    let currentNumber = numberData[0];
+    let currentKata = kataData[0];
+    let isUppercase = true;
+    let canvas, ctx, isDrawing = false, lastX = 0, lastY = 0;
+    
+    function getCurrentDisplayText() {
+        if (currentMode === "huruf") {
+            return isUppercase ? currentChar.upper : currentChar.lower;
+        } else if (currentMode === "angka") {
+            return currentNumber.display;
+        } else if (currentMode === "kata") {
+            return currentKata.word;
+        } else {
+            return "";
+        }
+    }
+    
+    function getCurrentImage() {
+        if (currentMode === "huruf") {
+            return currentChar.image;
+        } else if (currentMode === "angka") {
+            return currentNumber.image;
+        } else if (currentMode === "kata") {
+            return currentKata.image;
+        } else {
+            return "✏️";
+        }
+    }
+    
+    function getCurrentDesc() {
+        if (currentMode === "huruf") {
+            return currentChar.name;
+        } else if (currentMode === "angka") {
+            return currentNumber.name;
+        } else if (currentMode === "kata") {
+            return currentKata.desc;
+        } else {
+            return "bebas";
+        }
+    }
+    
+    function redrawGuide() {
+        if (!ctx) return;
+        ctx.fillStyle = "#fffef7";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if (currentMode === "kosong") {
+            // Tidak ada garis titik-titik untuk mode kosong
+            return;
+        }
+        
+        ctx.save();
+        ctx.strokeStyle = "#cccccc";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 8]);
+        
+        let centerX = canvas.width / 2;
+        let centerY = canvas.height / 2;
+        let displayText = getCurrentDisplayText();
+        
+        let fontSize;
+        if (displayText.length <= 3) {
+            fontSize = Math.min(canvas.width, canvas.height) * 0.45;
+        } else if (displayText.length <= 6) {
+            fontSize = Math.min(canvas.width, canvas.height) * 0.32;
+        } else {
+            fontSize = Math.min(canvas.width, canvas.height) * 0.24;
+        }
+        
+        ctx.font = `bold ${fontSize}px "Comic Neue", "Comic Sans MS"`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.strokeText(displayText, centerX, centerY);
+        
+        ctx.setLineDash([]);
+        ctx.restore();
+    }
+    
+    function initCanvas() {
+        const canvasElem = document.getElementById("writingCanvas");
+        if (!canvasElem) return;
+        canvas = canvasElem;
+        ctx = canvas.getContext("2d");
+        
+        function resize() {
+            // Ukuran canvas diatur oleh CSS (max-width, aspect-ratio)
+            // Kita ambil ukuran asli dari canvas setelah CSS applied
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            redrawGuide();
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 8;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+        }
+        
+        function getCoord(e) {
+            let rect = canvas.getBoundingClientRect();
+            let scaleX = canvas.width / rect.width;
+            let scaleY = canvas.height / rect.height;
+            let cx, cy;
+            if (e.touches) {
+                cx = e.touches[0].clientX;
+                cy = e.touches[0].clientY;
+            } else {
+                cx = e.clientX;
+                cy = e.clientY;
+            }
+            let x = (cx - rect.left) * scaleX;
+            let y = (cy - rect.top) * scaleY;
+            x = Math.min(Math.max(0, x), canvas.width);
+            y = Math.min(Math.max(0, y), canvas.height);
+            return { x, y };
+        }
+        
+        function startDraw(e) {
+            e.preventDefault();
+            isDrawing = true;
+            let { x, y } = getCoord(e);
+            lastX = x;
+            lastY = y;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            let { x, y } = getCoord(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            lastX = x;
+            lastY = y;
+        }
+        
+        function endDraw() {
+            if (isDrawing && currentMode !== "kosong") {
+                let written = getCurrentDisplayText();
+                if (written) updateWritingProgress(currentUser, written);
+            }
+            isDrawing = false;
+            ctx.beginPath();
+        }
+        
+        canvas.removeEventListener("mousedown", startDraw);
+        canvas.removeEventListener("mousemove", draw);
+        canvas.removeEventListener("mouseup", endDraw);
+        canvas.removeEventListener("mouseleave", endDraw);
+        canvas.removeEventListener("touchstart", startDraw);
+        canvas.removeEventListener("touchmove", draw);
+        canvas.removeEventListener("touchend", endDraw);
+        
+        canvas.addEventListener("mousedown", startDraw);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", endDraw);
+        canvas.addEventListener("mouseleave", endDraw);
+        canvas.addEventListener("touchstart", startDraw);
+        canvas.addEventListener("touchmove", draw);
+        canvas.addEventListener("touchend", endDraw);
+        
+        resize();
+        window.addEventListener("resize", resize);
+    }
+    
+    function clearCanvas() {
+        redrawGuide();
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 8;
+    }
+    
+    function renderPage() {
+        let modeHtml = "";
+        
+        if (currentMode === "huruf") {
+            modeHtml = `
+                <div class="type-selector">
+                    <button class="type-btn ${isUppercase ? 'active' : ''}" id="toggleUpper">🔠 Huruf Besar</button>
+                    <button class="type-btn ${!isUppercase ? 'active' : ''}" id="toggleLower">🔡 Huruf Kecil</button>
+                </div>
+                <div class="char-selector">
+                    ${alphabetData.map(item => {
+                        return `<button class="char-btn ${item.upper === currentChar.upper ? 'active' : ''}" data-char="${item.upper}">${item.upper}</button>`;
+                    }).join('')}
+                </div>
+            `;
+        } else if (currentMode === "angka") {
+            modeHtml = `
+                <div class="char-selector">
+                    ${numberData.map(item => {
+                        return `<button class="char-btn ${item.display === currentNumber.display ? 'active' : ''}" data-char="${item.display}">${item.display}</button>`;
+                    }).join('')}
+                </div>
+            `;
+        } else if (currentMode === "kata") {
+            modeHtml = `
+                <div class="word-list">
+                    ${kataData.map(item => {
+                        return `<button class="word-btn ${item.id === currentKata.id ? 'active' : ''}" data-id="${item.id}">
+                                    ${item.image} ${item.word}
+                                </button>`;
+                    }).join('')}
+                </div>
+                <div class="word-display">
+                    🖼️ ${currentKata.image} → <strong style="color:#4caf50;">${currentKata.word}</strong>
+                </div>
+            `;
+        } else {
+            modeHtml = `
+                <div class="word-display" style="background:#e8f5e9;">
+                    🎨 Bebas menulis apapun yang kamu mau!
+                </div>
+            `;
+        }
+        
+        let displayText = getCurrentDisplayText();
+        let currentImage = getCurrentImage();
+        let currentDesc = getCurrentDesc();
+        
+        let html = `
+            <div class="writing-area">
+                <a href="dashboard.html" class="btn btn-back" style="text-decoration:none; display:inline-block; margin-bottom:15px;">← Kembali</a>
+                
+                <div class="mode-selector">
+                    <button class="mode-btn ${currentMode === 'huruf' ? 'active' : ''}" data-mode="huruf">🔤 Huruf</button>
+                    <button class="mode-btn ${currentMode === 'angka' ? 'active' : ''}" data-mode="angka">🔢 Angka</button>
+                    <button class="mode-btn ${currentMode === 'kata' ? 'active' : ''}" data-mode="kata">📝 Kata</button>
+                    <button class="mode-btn ${currentMode === 'kosong' ? 'active' : ''}" data-mode="kosong">🎨 Kosong</button>
+                </div>
+                
+                ${modeHtml}
+                
+                <div class="guide-image">
+                    <span style="font-size: 2.5rem;">${currentImage}</span>
+                    <p><strong>Ayo Menulis!</strong><br>
+                    ${currentMode === 'kosong' ? 'Tulis bebas sesuai imajinasimu!' : `Ikuti garis titik-titik untuk menulis <strong>${displayText}</strong>`}
+                    </p>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="writingCanvas"></canvas>
+                </div>
+                
+                <div class="toolbar">
+                    <button class="btn btn-danger" id="clearCanvasBtn">🗑️ Hapus Tulisan</button>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById("mainContent").innerHTML = html;
+        
+        // Event mode
+        document.querySelectorAll(".mode-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentMode = btn.getAttribute("data-mode");
+                if (currentMode === "huruf") {
+                    currentChar = alphabetData[0];
+                } else if (currentMode === "angka") {
+                    currentNumber = numberData[0];
+                } else if (currentMode === "kata") {
+                    currentKata = kataData[0];
+                }
+                renderPage();
+            });
+        });
+        
+        // Event huruf
+        if (currentMode === "huruf") {
+            document.querySelectorAll(".char-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    let charVal = btn.getAttribute("data-char");
+                    let found = alphabetData.find(a => a.upper === charVal);
+                    if (found) currentChar = found;
+                    renderPage();
+                });
+            });
+            const toggleUpper = document.getElementById("toggleUpper");
+            const toggleLower = document.getElementById("toggleLower");
+            if (toggleUpper) toggleUpper.addEventListener("click", () => { isUppercase = true; renderPage(); });
+            if (toggleLower) toggleLower.addEventListener("click", () => { isUppercase = false; renderPage(); });
+        }
+        
+        // Event angka
+        if (currentMode === "angka") {
+            document.querySelectorAll(".char-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    let charVal = btn.getAttribute("data-char");
+                    let found = numberData.find(n => n.display === charVal);
+                    if (found) currentNumber = found;
+                    renderPage();
+                });
+            });
+        }
+        
+        // Event kata
+        if (currentMode === "kata") {
+            document.querySelectorAll(".word-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    let id = parseInt(btn.getAttribute("data-id"));
+                    let found = kataData.find(k => k.id === id);
+                    if (found) currentKata = found;
+                    renderPage();
+                });
+            });
+        }
+        
+        const clearBtn = document.getElementById("clearCanvasBtn");
+        if (clearBtn) clearBtn.addEventListener("click", () => clearCanvas());
+        
+        setTimeout(() => { initCanvas(); }, 50);
+    }
+    
+    renderPage();
+</script>
+</body>
+</html>

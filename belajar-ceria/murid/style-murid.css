@@ -1,0 +1,22 @@
+/* Style khusus untuk halaman murid */
+.murid-header {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+}
+
+.murid-card {
+    background: linear-gradient(145deg, #e8f5e9, #c8e6c9);
+    border-color: #66bb6a;
+}
+
+.murid-btn {
+    background: linear-gradient(135deg, #66bb6a, #43a047);
+}
+
+.murid-badge-earned {
+    background: #4caf50;
+    color: white;
+}
+
+.murid-writing-area {
+    border: 3px solid #a5d6a7;
+}

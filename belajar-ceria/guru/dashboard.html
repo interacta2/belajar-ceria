@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Dashboard Guru | Belajar Ceria</title>
+  <link rel="stylesheet" href="../css/style-umum.css">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    .stats-container {
+      background: #fef7e6;
+      border-radius: 50px;
+      padding: 1.5rem;
+    }
+    
+    /* Tabel wrapper dengan scroll VERTIKAL */
+    .table-wrapper {
+      max-height: 450px;
+      overflow-y: auto;
+      overflow-x: auto;
+      border-radius: 30px;
+      margin-top: 15px;
+      border: 1px solid #ffdd99;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      min-width: 900px;
+    }
+    
+    th {
+      background: #ffb347;
+      color: white;
+      padding: 12px 10px;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    
+    td {
+      padding: 10px 8px;
+      text-align: center;
+      border-bottom: 1px solid #f0e0c0;
+      white-space: nowrap;
+    }
+    
+    .progress-bar {
+      background: #eee;
+      border-radius: 20px;
+      height: 20px;
+      width: 100%;
+      min-width: 80px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: #4caf50;
+      height: 100%;
+      border-radius: 20px;
+    }
+    .detail-btn {
+      background: #ffb347;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .add-btn {
+      background: #4caf50;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .reset-btn {
+      background: #ff8c42;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      margin-left: 10px;
+    }
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: #ffe0b5;
+      border: none;
+      padding: 6px 15px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .filter-btn.active {
+      background: #ffb347;
+      color: white;
+    }
+    .badge-small {
+      display: inline-block;
+      background: #ffb347;
+      border-radius: 20px;
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      color: white;
+    }
+    .info-text {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #8B5E3C;
+    }
+    
+    @media (max-width: 600px) {
+      .stats-container { padding: 1rem; }
+      .table-wrapper { max-height: 350px; }
+      .filter-btn { padding: 4px 10px; font-size: 0.7rem; }
+      th, td { padding: 6px 4px; font-size: 0.7rem; }
+      .detail-btn { padding: 3px 8px; font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="logo"><h2>👩‍🏫 Panel Guru</h2></div>
+    <div class="user-info">
+      <span>👨‍🏫 Admin</span>
+      <button class="logout-btn" onclick="logoutGuru()">🚪 Keluar</button>
+    </div>
+  </div>
+  <div class="main-content" id="mainContent"></div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/guru.js"></script>
+<script>
+    let currentFilter = "semua";
+    
+    function getStudentStats() {
+      let stats = [];
+      for (let student of studentsList) {
+        let progress = getStudentProgress(student);
+        let writeCount = progress.writeCount || 0;
+        let writtenCount = (progress.writtenLetters || []).length;
+        let readCount = progress.readCount || 0;
+        let mathCount = progress.mathCount || 0;
+        let totalAktivitas = writeCount + readCount + mathCount;
+        let earnedCount = (progress.achievements || []).length;
+        let totalAchievements = achievements.length;
+        
+        stats.push({
+          nama: student,
+          menulis: writeCount,
+          hurufDikuasai: writtenCount,
+          membaca: readCount,
+          berhitung: mathCount,
+          totalAktivitas: totalAktivitas,
+          lencana: earnedCount,
+          totalLencana: totalAchievements,
+          persenHuruf: Math.round((writtenCount / 26) * 100)
+        });
+      }
+      
+      // Urutkan berdasarkan nama A-Z
+      stats.sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
+      
+      return stats;
+    }
+    
+    function renderDashboard() {
+      let allStats = getStudentStats();
+      
+      // Filter
+      let filteredStats = allStats;
+      if (currentFilter === "aktif") {
+        filteredStats = allStats.filter(s => s.totalAktivitas > 0);
+      } else if (currentFilter === "perlu") {
+        filteredStats = allStats.filter(s => s.persenHuruf < 25);
+      }
+      
+      let html = `
+        <div class="stats-container">
+          <h2 style="color:#5a3a1a; margin-bottom:15px;">📊 Progress Belajar Murid</h2>
+          
+          <div class="filter-buttons">
+            <button class="filter-btn ${currentFilter === 'semua' ? 'active' : ''}" onclick="setFilter('semua')">📋 Semua (${allStats.length})</button>
+            <button class="filter-btn ${currentFilter === 'aktif' ? 'active' : ''}" onclick="setFilter('aktif')">⭐ Aktif (${allStats.filter(s=>s.totalAktivitas>0).length})</button>
+            <button class="filter-btn ${currentFilter === 'perlu' ? 'active' : ''}" onclick="setFilter('perlu')">📖 Perlu Bimbingan (${allStats.filter(s=>s.persenHuruf<25).length})</button>
+          </div>
+          
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>✍️ Menulis</th>
+                  <th>🔤 Huruf</th>
+                  <th>📖 Membaca</th>
+                  <th>🔢 Berhitung</th>
+                  <th>📊 Progres</th>
+                  <th>🏆 Lencana</th>
+                  <th>⭐ Total</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+      `;
+      
+      let no = 1;
+      for (let s of filteredStats) {
+        let progresWarna = s.persenHuruf >= 50 ? "#4caf50" : (s.persenHuruf >= 25 ? "#ff9800" : "#f44336");
+        html += `
+          <tr>
+            <td>${no++}</td>
+            <td><strong>${s.nama}</strong></td>
+            <td>${s.menulis}x</td>
+            <td>${s.hurufDikuasai}/26</td>
+            <td>${s.membaca}x</td>
+            <td>${s.berhitung}x</td>
+            <td>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${s.persenHuruf}%; background: ${progresWarna};"></div>
+              </div>
+              <span style="font-size:0.65rem;">${s.persenHuruf}%</span>
+            </td>
+            <td><span class="badge-small">${s.lencana}/${s.totalLencana}</span></td>
+            <td><strong>${s.totalAktivitas}</strong></td>
+            <td><button class="detail-btn" onclick="lihatDetail('${s.nama}')">Detail</button></td>
+          </tr>
+        `;
+      }
+      
+      if (filteredStats.length === 0) {
+        html += `<tr><td colspan="10" style="text-align:center;">Belum ada data murid</td></tr>`;
+      }
+      
+      html += `
+              </tbody>
+            </table>
+          </div>
+          <div class="info-text">
+            Total ${filteredStats.length} murid
+          </div>
+          
+          <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button class="add-btn" onclick="tambahMurid()">➕ Tambah Murid Baru</button>
+            <button class="reset-btn" onclick="resetDataGuru()">🔄 Reset Semua Data</button>
+          </div>
+          <div id="msg" class="message" style="margin-top:15px;"></div>
+        </div>
+      `;
+      
+      document.getElementById("mainContent").innerHTML = html;
+    }
+    
+    function setFilter(filter) {
+      currentFilter = filter;
+      renderDashboard();
+    }
+    
+    function tambahMurid() {
+      let newName = prompt("Masukkan nama murid baru:");
+      if (newName && newName.trim()) {
+        // Kapitalisasi huruf pertama
+        let formattedName = newName.trim().charAt(0).toUpperCase() + newName.trim().slice(1).toLowerCase();
+        if (addStudent(formattedName)) {
+          document.getElementById("msg").className = "message success";
+          document.getElementById("msg").innerHTML = `✅ Murid ${formattedName} berhasil ditambahkan!`;
+          setTimeout(() => renderDashboard(), 1000);
+        } else {
+          document.getElementById("msg").className = "message error";
+          document.getElementById("msg").innerHTML = `❌ Nama ${formattedName} sudah ada!`;
+        }
+      }
+    }
+    
+    function resetDataGuru() {
+      if (confirm("Yakin ingin mereset semua data? Semua progress murid akan hilang!")) {
+        localStorage.clear();
+        alert("Data telah direset! Halaman akan dimuat ulang.");
+        window.location.reload();
+      }
+    }
+    
+    function lihatDetail(nama) {
+      window.location.href = `detail-murid.html?nama=${encodeURIComponent(nama)}`;
+    }
+    
+    function logoutGuru() {
+      sessionStorage.removeItem("bc_teacher_logged");
+      window.location.href = "login.html";
+    }
+    
+    // Cek auth
+    if (sessionStorage.getItem("bc_teacher_logged") !== "true") {
+      window.location.href = "login.html";
+    }
+    
+    renderDashboard();
+    
+    window.setFilter = setFilter;
+    window.tambahMurid = tambahMurid;
+    window.resetDataGuru = resetDataGuru;
+    window.lihatDetail = lihatDetail;
+    window.logoutGuru = logoutGuru;
+</script>
+</body>
+</html>
