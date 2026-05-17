@@ -1,0 +1,26 @@
+/* Style khusus untuk halaman guru */
+.guru-header {
+    background: linear-gradient(135deg, #2196f3, #1565c0);
+}
+
+.guru-card {
+    background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+    border-color: #64b5f6;
+}
+
+.guru-table th {
+    background: #1976d2;
+    color: white;
+}
+
+.guru-btn {
+    background: linear-gradient(135deg, #42a5f5, #1e88e5);
+}
+
+.progress-bar-blue {
+    background: #bbdefb;
+}
+
+.progress-fill-blue {
+    background: #1976d2;
+}

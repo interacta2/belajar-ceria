@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Guru Login | Belajar Ceria</title>
+  <link rel="stylesheet" href="../css/style-umum.css">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Style khusus halaman login guru */
+    .guru-login-container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .login-box {
+      background: #fffef7;
+      border-radius: 50px;
+      padding: 35px 30px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    .login-title {
+      text-align: center;
+      color: #c25d00;
+      margin-bottom: 30px;
+      font-size: 1.5rem;
+    }
+    .input-group {
+      margin-bottom: 25px;
+    }
+    .input-group label {
+      display: block;
+      font-weight: bold;
+      color: #5a3a1a;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #ffcd94;
+      border-radius: 50px;
+      font-size: 1rem;
+      background: white;
+      transition: 0.2s;
+    }
+    .input-group input:focus {
+      border-color: #ffb347;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255,180,71,0.2);
+    }
+    .login-btn {
+      background: linear-gradient(135deg, #ffb347, #ff8c42);
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 5px 0 #c25d1a;
+      transition: 0.05s linear;
+    }
+    .login-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #c25d1a;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 25px;
+    }
+    .back-link a {
+      color: #ff8c42;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .message {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 40px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+    .message.error {
+      background: #ffcdd2;
+      color: #b71c1c;
+      display: block;
+    }
+    .message.success {
+      background: #c8e6c9;
+      color: #1b5e20;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container" style="max-width:500px; margin:0 auto;">
+  <div class="header">
+    <div class="logo"><h2>👩‍🏫 Belajar Ceria</h2></div>
+  </div>
+  <div class="main-content">
+    <div class="guru-login-container">
+      <div class="login-box">
+        <h2 class="login-title">Masuk sebagai Guru</h2>
+        
+        <form id="loginForm">
+          <div class="input-group">
+            <label>👤 Username</label>
+            <input type="text" id="username" placeholder="admin" required>
+          </div>
+          
+          <div class="input-group">
+            <label>🔒 Password</label>
+            <input type="password" id="password" placeholder="••••••" required>
+          </div>
+          
+          <button type="submit" class="login-btn">Masuk</button>
+          <div id="message" class="message"></div>
+        </form>
+        
+        <div class="back-link">
+          <a href="../index.html">← Kembali</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TEACHER_USERNAME = "admin";
+  const TEACHER_PASSWORD = "123";
+  
+  document.getElementById("loginForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+    const msgDiv = document.getElementById("message");
+    
+    if (user === TEACHER_USERNAME && pass === TEACHER_PASSWORD) {
+      sessionStorage.setItem("bc_teacher_logged", "true");
+      msgDiv.className = "message success";
+      msgDiv.innerHTML = "✅ Login berhasil! Mengarahkan...";
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1000);
+    } else {
+      msgDiv.className = "message error";
+      msgDiv.innerHTML = "❌ Username atau password salah!";
+    }
+  });
+</script>
+</body>
+</html>

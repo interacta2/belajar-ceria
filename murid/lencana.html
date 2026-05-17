@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Lencana Saya | Belajar Ceria</title>
+  <link rel="stylesheet" href="../css/style-umum.css">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="logo"><h2>✍️ Belajar Ceria</h2></div>
+    <div class="user-info">
+      <span id="userName"></span>
+      <button class="logout-btn" onclick="logoutMurid()">🚪 Keluar</button>
+    </div>
+  </div>
+  <div class="main-content" id="mainContent"></div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/murid.js"></script>
+<script>
+    let currentUser = getCurrentUser();
+    if (!currentUser) window.location.href = "dashboard.html";
+    document.getElementById("userName").innerHTML = `🧒 ${currentUser}`;
+    renderMuridLencana();
+</script>
+</body>
+</html>

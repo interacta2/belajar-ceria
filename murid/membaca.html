@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Membaca | Belajar Ceria</title>
+  <link rel="stylesheet" href="../css/style-umum.css">
+  <style>
+    .reading-container {
+      background: white;
+      border-radius: 50px;
+      padding: 1.5rem;
+    }
+    .tab-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: #ffefcf;
+      padding: 6px;
+      border-radius: 60px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      color: #c25d00;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #ffb347, #ff8c42);
+      color: white;
+    }
+    
+    /* ========== TAB MENGENAL HURUF ========== */
+    .huruf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .huruf-card {
+      background: linear-gradient(145deg, #ffffff, #fff5e6);
+      border-radius: 25px;
+      padding: 15px 5px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #e0a864;
+      transition: 0.05s linear;
+    }
+    .huruf-card:active { transform: translateY(2px); box-shadow: 0 2px 0 #e0a864; }
+    .huruf-besar { font-size: 1.8rem; font-weight: bold; color: #ff8c42; }
+    .huruf-kecil { font-size: 1rem; color: #8B5E3C; }
+    .huruf-gambar { font-size: 1.5rem; margin-top: 5px; }
+    
+    /* ========== TAB MENGEJA ========== */
+    .ejaan-pilih-kata {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .ejaan-kata-btn {
+      background: #ffefcf;
+      border: 2px solid #ffb347;
+      border-radius: 40px;
+      padding: 10px 18px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #c25d00;
+    }
+    .ejaan-kata-btn.active {
+      background: #ffb347;
+      color: white;
+    }
+    .ejaan-container {
+      background: #fff3e0;
+      border-radius: 40px;
+      padding: 20px;
+      text-align: center;
+    }
+    .ejaan-gambar {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    .ejaan-suku-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .ejaan-suku-item {
+      background: white;
+      border-radius: 35px;
+      padding: 15px 25px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid #ffb347;
+      min-width: 100px;
+      transition: 0.05s linear;
+    }
+    .ejaan-suku-item:active { transform: scale(0.95); background: #ffb347; }
+    .ejaan-suku-item:active .ejaan-suku-tulisan { color: white; }
+    .ejaan-suku-tulisan { font-size: 1.8rem; font-weight: bold; color: #c25d00; }
+    .ejaan-hasil {
+      background: #e8f5e9;
+      border-radius: 35px;
+      padding: 15px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    .ejaan-hasil-teks { font-size: 1.6rem; font-weight: bold; color: #2e7d32; }
+    
+    /* ========== TAB MEMBACA ========== */
+    .membaca-section {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      border-radius: 40px;
+      padding: 25px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .membaca-gambar { font-size: 4rem; }
+    .membaca-teks { font-size: 2rem; font-weight: bold; color: #2e7d32; margin: 10px 0; }
+    .mic-btn {
+      background: linear-gradient(135deg, #ffb347, #ff8c42);
+      border: none;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      font-size: 3rem;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #c25d1a;
+      margin: 15px auto;
+      display: block;
+    }
+    .mic-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #c25d1a; }
+    .mic-btn.recording {
+      background: linear-gradient(135deg, #f44336, #d32f2f);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .status {
+      padding: 12px;
+      border-radius: 40px;
+      text-align: center;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+    .status-listening { background: #fff3e0; color: #ff8c42; }
+    .status-success { background: #c8e6c9; color: #2e7d32; }
+    .status-error { background: #ffcdd2; color: #c62828; }
+    .nav-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .nav-btn {
+      background: #ff8c42;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 600px) {
+      .huruf-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+      .huruf-besar { font-size: 1.2rem; }
+      .ejaan-suku-item { padding: 10px 15px; min-width: 70px; }
+      .ejaan-suku-tulisan { font-size: 1.3rem; }
+      .membaca-teks { font-size: 1.3rem; }
+      .mic-btn { width: 70px; height: 70px; font-size: 2rem; }
+      .tab-btn { font-size: 0.8rem; padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="logo"><h2>📖 Belajar Membaca</h2></div>
+    <div class="user-info">
+      <span id="userName"></span>
+      <button class="logout-btn" onclick="logoutMurid()">🚪 Keluar</button>
+    </div>
+  </div>
+  <div class="main-content" id="mainContent"></div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/murid.js"></script>
+<script>
+    let currentUser = getCurrentUser();
+    if (!currentUser) window.location.href = "dashboard.html";
+    document.getElementById("userName").innerHTML = `🧒 ${currentUser}`;
+    
+    let currentTab = "huruf";
+    
+    // ========== DATA UNTUK MEMBACA & MENGEJA (DIPERBANYAK) ==========
+    const kataList = [
+      { id: 1, gambar: "🐱", kata: "kucing", suku: ["ku", "cing"] },
+      { id: 2, gambar: "🐶", kata: "anjing", suku: ["an", "jing"] },
+      { id: 3, gambar: "🏠", kata: "rumah", suku: ["ru", "mah"] },
+      { id: 4, gambar: "📚", kata: "buku", suku: ["bu", "ku"] },
+      { id: 5, gambar: "✏️", kata: "pensil", suku: ["pen", "sil"] },
+      { id: 6, gambar: "🍎", kata: "apel", suku: ["a", "pel"] },
+      { id: 7, gambar: "🍌", kata: "pisang", suku: ["pi", "sang"] },
+      { id: 8, gambar: "🚗", kata: "mobil", suku: ["mo", "bil"] },
+      { id: 9, gambar: "🐘", kata: "gajah", suku: ["ga", "jah"] },
+      { id: 10, gambar: "🐮", kata: "sapi", suku: ["sa", "pi"] },
+      { id: 11, gambar: "🐔", kata: "ayam", suku: ["a", "yam"] },
+      { id: 12, gambar: "🐟", kata: "ikan", suku: ["i", "kan"] },
+      { id: 13, gambar: "🦁", kata: "singa", suku: ["si", "nga"] },
+      { id: 14, gambar: "🐒", kata: "monyet", suku: ["mo", "nyet"] },
+      { id: 15, gambar: "🦒", kata: "jerapah", suku: ["je", "ra", "pah"] },
+      { id: 16, gambar: "🐧", kata: "pinguin", suku: ["pin", "gu", "in"] },
+      { id: 17, gambar: "🦋", kata: "kupu", suku: ["ku", "pu"] },
+      { id: 18, gambar: "🐝", kata: "lebah", suku: ["le", "bah"] },
+      { id: 19, gambar: "🐌", kata: "siput", suku: ["si", "put"] },
+      { id: 20, gambar: "🦀", kata: "kepiting", suku: ["ke", "pi", "ting"] }
+    ];
+    
+    let currentMembacaIndex = 0;
+    let currentMembacaData = kataList[0];
+    let currentEjaanIndex = 0;
+    let currentEjaanData = kataList[0];
+    let recognition = null;
+    let isRecording = false;
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const hasMicSupport = SpeechRecognition !== undefined;
+    
+    if (hasMicSupport) {
+      recognition = new SpeechRecognition();
+      recognition.lang = 'id-ID';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+    }
+    
+    function cleanText(text) {
+      return text.toLowerCase().trim().replace(/[.,!?;:()\s]+/g, '').replace(/[^a-z0-9]/g, '');
+    }
+    
+    function speakText(text) {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        let utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.8;
+        utterance.pitch = 1.1;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+    
+    // ========== TAB MENGENAL HURUF ==========
+    function speakHuruf(huruf, gambar, nama) {
+      speakText(`Ini huruf ${huruf}, ${nama}`);
+    }
+    
+    // ========== TAB MENGEJA ==========
+    function playSuku(suku) {
+      speakText(suku);
+    }
+    
+    function playSeluruhKata() {
+      speakText(currentEjaanData.kata);
+    }
+    
+    function pilihKataEjaan(index) {
+      currentEjaanIndex = index;
+      currentEjaanData = kataList[currentEjaanIndex];
+      renderMengejaPage();
+    }
+    
+    // ========== TAB MEMBACA ==========
+    function startListening() {
+      if (!hasMicSupport) {
+        document.getElementById("status").innerHTML = "❌ Browser tidak mendukung microphone";
+        document.getElementById("status").className = "status status-error";
+        return;
+      }
+      if (isRecording) return;
+      
+      isRecording = true;
+      const micBtn = document.getElementById("micBtn");
+      micBtn.classList.add("recording");
+      document.getElementById("status").innerHTML = "🎤 Dengarkan... Bacakan kata di atas!";
+      document.getElementById("status").className = "status status-listening";
+      
+      recognition.start();
+      
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.toLowerCase().trim();
+        const validasi = currentMembacaData.kata.toLowerCase();
+        const isCorrect = cleanText(transcript) === cleanText(validasi);
+        
+        if (isCorrect) {
+          document.getElementById("status").innerHTML = `✅ Benar! "${transcript}" = "${validasi}"`;
+          document.getElementById("status").className = "status status-success";
+          speakText(`Bagus! Kamu membaca ${validasi} dengan benar`);
+          updateReadingProgress();
+        } else {
+          document.getElementById("status").innerHTML = `❌ Kurang tepat. Kamu membaca "${transcript}", seharusnya "${validasi}"`;
+          document.getElementById("status").className = "status status-error";
+          speakText(`Coba lagi, baca ${validasi}`);
+        }
+        isRecording = false;
+        micBtn.classList.remove("recording");
+      };
+      
+      recognition.onerror = () => {
+        document.getElementById("status").innerHTML = "❌ Coba lagi!";
+        document.getElementById("status").className = "status status-error";
+        isRecording = false;
+        micBtn.classList.remove("recording");
+      };
+      
+      recognition.onend = () => {
+        if (isRecording) {
+          isRecording = false;
+          micBtn.classList.remove("recording");
+        }
+      };
+    }
+    
+    function nextMembaca() {
+      if (currentMembacaIndex + 1 < kataList.length) {
+        currentMembacaIndex++;
+        currentMembacaData = kataList[currentMembacaIndex];
+        renderMembacaPage();
+      } else {
+        document.getElementById("status").innerHTML = "🎉 Selesai! Semua bacaan sudah kamu baca! 🎉";
+      }
+    }
+    
+    function prevMembaca() {
+      if (currentMembacaIndex - 1 >= 0) {
+        currentMembacaIndex--;
+        currentMembacaData = kataList[currentMembacaIndex];
+        renderMembacaPage();
+      }
+    }
+    
+    // ========== RENDER TAB ==========
+    function renderHurufPage() {
+      let hurufHtml = '';
+      for (let h of alphabetData) {
+        hurufHtml += `
+          <div class="huruf-card" onclick="speakHuruf('${h.upper}', '${h.image}', '${h.name}')">
+            <div class="huruf-besar">${h.upper}</div>
+            <div class="huruf-kecil">${h.lower}</div>
+            <div class="huruf-gambar">${h.image}</div>
+          </div>
+        `;
+      }
+      
+      let html = `
+        <div class="reading-container">
+          <a href="dashboard.html" class="btn btn-back" style="text-decoration:none; display:inline-block; margin-bottom:15px;">← Kembali</a>
+          <div class="tab-nav">
+            <button class="tab-btn ${currentTab === 'huruf' ? 'active' : ''}" onclick="switchTab('huruf')">🔤 Mengenal Huruf</button>
+            <button class="tab-btn ${currentTab === 'mengeja' ? 'active' : ''}" onclick="switchTab('mengeja')">🔊 Mengeja</button>
+            <button class="tab-btn ${currentTab === 'membaca' ? 'active' : ''}" onclick="switchTab('membaca')">🎤 Membaca</button>
+          </div>
+          <div class="huruf-grid">
+            ${hurufHtml}
+          </div>
+          <p style="text-align:center; margin-top:15px;">✨ Klik huruf untuk mendengar suara ✨</p>
+        </div>
+      `;
+      document.getElementById("mainContent").innerHTML = html;
+    }
+    
+    function renderMengejaPage() {
+      let kataButtons = '';
+      for (let i = 0; i < kataList.length; i++) {
+        kataButtons += `<button class="ejaan-kata-btn ${i === currentEjaanIndex ? 'active' : ''}" onclick="pilihKataEjaan(${i})">${kataList[i].gambar} ${kataList[i].kata}</button>`;
+      }
+      
+      let sukuHtml = '';
+      for (let suku of currentEjaanData.suku) {
+        sukuHtml += `
+          <div class="ejaan-suku-item" onclick="playSuku('${suku}')">
+            <div class="ejaan-suku-tulisan">${suku}</div>
+          </div>
+        `;
+      }
+      
+      let html = `
+        <div class="reading-container">
+          <a href="dashboard.html" class="btn btn-back" style="text-decoration:none; display:inline-block; margin-bottom:15px;">← Kembali</a>
+          <div class="tab-nav">
+            <button class="tab-btn ${currentTab === 'huruf' ? 'active' : ''}" onclick="switchTab('huruf')">🔤 Mengenal Huruf</button>
+            <button class="tab-btn ${currentTab === 'mengeja' ? 'active' : ''}" onclick="switchTab('mengeja')">🔊 Mengeja</button>
+            <button class="tab-btn ${currentTab === 'membaca' ? 'active' : ''}" onclick="switchTab('membaca')">🎤 Membaca</button>
+          </div>
+          <div class="ejaan-pilih-kata">
+            ${kataButtons}
+          </div>
+          <div class="ejaan-container">
+            <div class="ejaan-gambar">${currentEjaanData.gambar}</div>
+            <div class="ejaan-suku-grid">
+              ${sukuHtml}
+            </div>
+            <div class="ejaan-hasil" onclick="playSeluruhKata()">
+              <div class="ejaan-hasil-teks">✨ ${currentEjaanData.kata} ✨</div>
+              <div style="font-size:0.8rem;">Klik untuk dengar seluruh kata</div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById("mainContent").innerHTML = html;
+    }
+    
+    function renderMembacaPage() {
+      let html = `
+        <div class="reading-container">
+          <a href="dashboard.html" class="btn btn-back" style="text-decoration:none; display:inline-block; margin-bottom:15px;">← Kembali</a>
+          <div class="tab-nav">
+            <button class="tab-btn ${currentTab === 'huruf' ? 'active' : ''}" onclick="switchTab('huruf')">🔤 Mengenal Huruf</button>
+            <button class="tab-btn ${currentTab === 'mengeja' ? 'active' : ''}" onclick="switchTab('mengeja')">🔊 Mengeja</button>
+            <button class="tab-btn ${currentTab === 'membaca' ? 'active' : ''}" onclick="switchTab('membaca')">🎤 Membaca</button>
+          </div>
+          <div class="membaca-section">
+            <div class="membaca-gambar">${currentMembacaData.gambar}</div>
+            <div class="membaca-teks">${currentMembacaData.kata}</div>
+            <button class="mic-btn" id="micBtn">🎤</button>
+            <div id="status" class="status status-listening">Tekan mic, lalu bacakan kata di atas!</div>
+          </div>
+          <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn" ${currentMembacaIndex === 0 ? 'disabled style="opacity:0.5"' : ''}>◀ Sebelumnya</button>
+            <span style="margin:0 10px;">${currentMembacaIndex+1} / ${kataList.length}</span>
+            <button class="nav-btn" id="nextBtn" ${currentMembacaIndex === kataList.length-1 ? 'disabled style="opacity:0.5"' : ''}>Selanjutnya ▶</button>
+          </div>
+        </div>
+      `;
+      document.getElementById("mainContent").innerHTML = html;
+      
+      document.getElementById("micBtn")?.addEventListener("click", startListening);
+      document.getElementById("prevBtn")?.addEventListener("click", prevMembaca);
+      document.getElementById("nextBtn")?.addEventListener("click", nextMembaca);
+    }
+    
+    function switchTab(tab) {
+      currentTab = tab;
+      if (tab === 'huruf') renderHurufPage();
+      else if (tab === 'mengeja') renderMengejaPage();
+      else renderMembacaPage();
+    }
+    
+    window.speakHuruf = speakHuruf;
+    window.playSuku = playSuku;
+    window.playSeluruhKata = playSeluruhKata;
+    window.pilihKataEjaan = pilihKataEjaan;
+    window.switchTab = switchTab;
+    
+    renderHurufPage();
+</script>
+</body>
+</html>
