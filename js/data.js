@@ -1,3 +1,5 @@
+// ==================== DATA STORAGE ====================
+// Data huruf A-Z lengkap (BENAR-BENAR RAMAH ANAK)
 const alphabetData = [
   { char: "A", upper: "A", lower: "a", image: "🍎", name: "Apel" },
   { char: "B", upper: "B", lower: "b", image: "🎈", name: "Balon" },
@@ -27,18 +29,46 @@ const alphabetData = [
   { char: "Z", upper: "Z", lower: "z", image: "🦓", name: "Zebra" }
 ];
 
+// ========== LENCANA (20 LENCANA YANG MUDAH DICAPAI ANAK) ==========
 const achievements = [
-  { id: "first_write", name: "Penulis Pemula", icon: "✍️", desc: "Menulis 1 huruf", type: "write", requirement: 1 },
-  { id: "write_5", name: "Jago Menulis", icon: "📝", desc: "Menulis 5 huruf", type: "write", requirement: 5 },
-  { id: "write_10", name: "Penulis Hebat", icon: "🖊️", desc: "Menulis 10 huruf", type: "write", requirement: 10 },
-  { id: "all_letters", name: "Pahlawan Alfabet", icon: "🔤", desc: "Menulis semua A-Z", type: "all_letters", requirement: 26 },
-  { id: "first_read", name: "Pembaca Pemula", icon: "📖", desc: "Membaca 1 kata", type: "read", requirement: 1 },
-  { id: "first_math", name: "Ahli Hitung Pemula", icon: "🔢", desc: "Menjawab 1 soal", type: "math", requirement: 1 },
+  // Lencana Menulis (6)
+  { id: "first_write", name: "Penulis Pemula", icon: "✍️", desc: "Menulis 1 huruf", type: "write", requirement: 1, kategori: "Menulis" },
+  { id: "write_5", name: "Jago Menulis", icon: "📝", desc: "Menulis 5 huruf", type: "write", requirement: 5, kategori: "Menulis" },
+  { id: "write_10", name: "Penulis Hebat", icon: "🖊️", desc: "Menulis 10 huruf", type: "write", requirement: 10, kategori: "Menulis" },
+  { id: "write_25", name: "Penulis Berbakat", icon: "✒️", desc: "Menulis 25 huruf", type: "write", requirement: 25, kategori: "Menulis" },
+  { id: "write_50", name: "Maestro Menulis", icon: "🏅", desc: "Menulis 50 huruf", type: "write", requirement: 50, kategori: "Menulis" },
+  { id: "all_letters", name: "Pahlawan Alfabet", icon: "🔤", desc: "Menulis semua A-Z", type: "all_letters", requirement: 26, kategori: "Menulis" },
+  
+  // Lencana Membaca (5)
+  { id: "first_read", name: "Pembaca Pemula", icon: "📖", desc: "Membaca 1 kata", type: "read", requirement: 1, kategori: "Membaca" },
+  { id: "read_10", name: "Rajin Membaca", icon: "📚", desc: "Membaca 10 kata", type: "read", requirement: 10, kategori: "Membaca" },
+  { id: "read_25", name: "Kutu Buku", icon: "🐛", desc: "Membaca 25 kata", type: "read", requirement: 25, kategori: "Membaca" },
+  { id: "read_50", name: "Pustakawan Cilik", icon: "🏛️", desc: "Membaca 50 kata", type: "read", requirement: 50, kategori: "Membaca" },
+  { id: "read_100", name: "Raja Membaca", icon: "👑", desc: "Membaca 100 kata", type: "read", requirement: 100, kategori: "Membaca" },
+  
+  // Lencana Berhitung (5)
+  { id: "first_math", name: "Ahli Hitung Pemula", icon: "🔢", desc: "Menjawab 1 soal", type: "math", requirement: 1, kategori: "Berhitung" },
+  { id: "math_10", name: "Jago Hitung", icon: "🧮", desc: "Menjawab 10 soal", type: "math", requirement: 10, kategori: "Berhitung" },
+  { id: "math_25", name: "Master Hitung", icon: "🎓", desc: "Menjawab 25 soal", type: "math", requirement: 25, kategori: "Berhitung" },
+  { id: "math_50", name: "Jenius Matematika", icon: "🧠", desc: "Menjawab 50 soal", type: "math", requirement: 50, kategori: "Berhitung" },
+  { id: "perfect_score", name: "Nilai Sempurna", icon: "💯", desc: "Dapat nilai 100 di kuis", type: "perfect_math", requirement: 1, kategori: "Berhitung" },
+  
+  // Lencana Spesial (4)
+  { id: "streak_7", name: "Pekan Rajin", icon: "📅", desc: "Belajar 7 hari berturut-turut", type: "streak", requirement: 7, kategori: "Spesial" },
+  { id: "streak_30", name: "Bulan Rajin", icon: "🗓️", desc: "Belajar 30 hari berturut-turut", type: "streak", requirement: 30, kategori: "Spesial" },
+  { id: "all_categories", name: "Bintang Super", icon: "⭐", desc: "Mendapat semua lencana", type: "all_achievements", requirement: 1, kategori: "Spesial" },
+  { id: "collector", name: "Kolektor Lencana", icon: "🎯", desc: "Mendapat 10 lencana", type: "collect", requirement: 10, kategori: "Spesial" }
 ];
 
-let studentsList = ["Budi", "Siti", "Ayu"];
+// Total lencana: 20 lencana
+
+// Data murid default
+let studentsList = ["Irul", "Farel"];
+
+// Progress setiap murid
 let studentProgress = {};
 
+// Load data dari localStorage
 function loadData() {
   const storedList = localStorage.getItem("bc_students_list");
   if (storedList) studentsList = JSON.parse(storedList);
@@ -68,6 +98,7 @@ function saveData() {
   localStorage.setItem("bc_students_progress", JSON.stringify(studentProgress));
 }
 
+// Tambah murid baru
 function addStudent(name) {
   if (!studentsList.includes(name)) {
     studentsList.push(name);
@@ -87,6 +118,7 @@ function addStudent(name) {
   return false;
 }
 
+// Dapatkan progress murid
 function getStudentProgress(name) {
   if (!studentProgress[name]) {
     studentProgress[name] = { 
@@ -104,6 +136,7 @@ function getStudentProgress(name) {
   return studentProgress[name];
 }
 
+// Update streak
 function updateStreak(studentName) {
   let progress = getStudentProgress(studentName);
   let today = new Date().toISOString().split('T')[0];
@@ -125,6 +158,7 @@ function updateStreak(studentName) {
   return progress.streakDays;
 }
 
+// Update progress setelah menulis
 function updateWritingProgress(studentName, letter) {
   let progress = getStudentProgress(studentName);
   progress.writeCount = (progress.writeCount || 0) + 1;
@@ -140,6 +174,7 @@ function updateWritingProgress(studentName, letter) {
   return progress;
 }
 
+// Update progress membaca
 function updateReadingProgress(studentName) {
   let progress = getStudentProgress(studentName);
   progress.readCount = (progress.readCount || 0) + 1;
@@ -148,6 +183,7 @@ function updateReadingProgress(studentName) {
   saveData();
 }
 
+// Update progress berhitung
 function updateMathProgress(studentName, isPerfect = false) {
   let progress = getStudentProgress(studentName);
   progress.mathCount = (progress.mathCount || 0) + 1;
@@ -159,10 +195,13 @@ function updateMathProgress(studentName, isPerfect = false) {
   saveData();
 }
 
+// Cek dan update achievements
 function checkAchievements(studentName) {
   let progress = getStudentProgress(studentName);
   let earnedIds = progress.achievements || [];
   let newAch = [];
+  
+  // Hitung jumlah lencana yang sudah didapat
   let totalEarned = earnedIds.length;
   
   for (let ach of achievements) {
@@ -182,6 +221,18 @@ function checkAchievements(studentName) {
     else if (ach.type === "math" && (progress.mathCount || 0) >= ach.requirement) {
       earned = true;
     }
+    else if (ach.type === "perfect_math" && (progress.perfectMathCount || 0) >= ach.requirement) {
+      earned = true;
+    }
+    else if (ach.type === "streak" && (progress.streakDays || 0) >= ach.requirement) {
+      earned = true;
+    }
+    else if (ach.type === "collect" && totalEarned >= ach.requirement) {
+      earned = true;
+    }
+    else if (ach.type === "all_achievements" && earnedIds.length >= achievements.length - 2) {
+      earned = true;
+    }
     
     if (earned) {
       earnedIds.push(ach.id);
@@ -193,12 +244,15 @@ function checkAchievements(studentName) {
   if (newAch.length > 0) {
     progress.achievements = earnedIds;
     saveData();
+    
+    // Simpan notifikasi achievement baru
     sessionStorage.setItem("new_achievements_" + studentName, JSON.stringify(newAch));
   }
   
   return newAch;
 }
 
+// Get unread achievements untuk murid
 function getNewAchievements(studentName) {
   let newAch = sessionStorage.getItem("new_achievements_" + studentName);
   if (newAch) {
@@ -208,6 +262,7 @@ function getNewAchievements(studentName) {
   return [];
 }
 
+// Get user yang sedang login dari sessionStorage
 function getCurrentUser() {
   return sessionStorage.getItem("bc_current_user");
 }
@@ -220,6 +275,7 @@ function clearCurrentUser() {
   sessionStorage.removeItem("bc_current_user");
 }
 
+// Fungsi suara
 function speak(text) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
@@ -235,4 +291,16 @@ function speak(text) {
   window.speechSynthesis.speak(utterance);
 }
 
+// Panggil load data saat pertama kali
 loadData();
+
+studentProgress[s] = { 
+  writeCount: 0, 
+  writtenLetters: [], 
+  readCount: 0,     // ← tambahkan
+  mathCount: 0,     // ← tambahkan
+  perfectMathCount: 0,
+  streakDays: 1,
+  lastActive: new Date().toISOString().split('T')[0],
+  achievements: [] 
+};
