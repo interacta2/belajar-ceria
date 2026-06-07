@@ -193,30 +193,19 @@
     document.getElementById("userName").innerHTML = `🧒 ${currentUser}`;
     
     // ========== SOUND EFFECT ==========
-    function playSound(type) {
-      try {
-        let ctx = new (window.AudioContext || window.webkitAudioContext)();
-        let osc = ctx.createOscillator();
-        let gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        gain.gain.value = 0.3;
-        
-        if (type === 'benar') {
-          osc.frequency.value = 880;
-          osc.type = 'sine';
-          osc.start();
-          gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.4);
-          osc.stop(ctx.currentTime + 0.4);
-        } else {
-          osc.frequency.value = 220;
-          osc.type = 'sawtooth';
-          osc.start();
-          gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.4);
-          osc.stop(ctx.currentTime + 0.4);
-        }
-      } catch(e) { console.log("Audio tidak didukung"); }
+function playSound(type) {
+    let audio = new Audio();
+    
+    if (type === 'benar') {
+        audio.src = '../assets/benar.mp3';
+    } else {
+        audio.src = '../assets/salah.mp3';
     }
+    
+    audio.play().catch(error => {
+        console.log("Error mainkan suara:", error);
+    });
+}
     
     // ========== GENERATE ANGKA ==========
     function generateAngkaList() {
