@@ -1,7 +1,7 @@
 // ==================== FUNGSI KHUSUS GURU ====================
 
 const TEACHER_USERNAME = "admin";
-const TEACHER_PASSWORD = "guru123";
+const TEACHER_PASSWORD = "123";
 
 // Cek login guru
 function checkGuruAuth() {
