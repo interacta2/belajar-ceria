@@ -38,7 +38,7 @@ function initGuruLogin() {
             }, 1000);
         } else {
             msgDiv.className = "message error";
-            msgDiv.innerHTML = "❌ Username atau password salah! (admin / guru123)";
+            msgDiv.innerHTML = "❌ Username atau password salah! (admin / guru)";
         }
     });
 }
